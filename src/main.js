@@ -1,60 +1,50 @@
 import Jimp from 'jimp';
-import {palette as quant} from 'neuquant-js';
+import { palette as quant } from 'neuquant-js';
 
-function scaleValue (value, min, max) {
-    const newMin = 0;
-    const newMax = 100;
-    const percent = (value - min) / (max - min);
-    return percent * (newMax - newMin) + newMin;
+function roundNumber(number, precision) {
+    const magnitude = 10 ** precision;
+    return Math.round(number * magnitude) / magnitude;
 }
 
-function colourStopFactory (width) {
-    return function colourStop (colour, index) {
-        return {
-            colour,
-            position: scaleValue(index, 0, width),
-        };
-    };
-}
-
-function rgbToHex ({r, g, b}) {
-    function convert (c) {
+function rgbToHex({ r, g, b }) {
+    function convert(c) {
         const hex = c.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
+        return hex.length === 1 ? `0${hex}` : hex;
     }
-    return '#' + convert(r) + convert(g) + convert(b);
+
+    return `#${convert(r)}${convert(g)}${convert(b)}`;
 }
 
-function findClosest (palette, r, g, b) {
+function findClosest(palette, r, g, b) {
     let minPos = 0;
     let minD = Number.MAX_SAFE_INTEGER;
 
-    for (let i = 0, l = palette.length; i < l;) {
-        const dR = r - palette[i++];
-        const dG = g - palette[i++];
-        const dB = b - palette[i];
-        const d = dR * dR + dG * dG + dB * dB;
+    for (let i = 0; i < palette.length; i += 3) {
+        const dR = r - palette[i];
+        const dG = g - palette[i + 1];
+        const dB = b - palette[i + 2];
+        const d = (dR * dR) + (dG * dG) + (dB * dB);
 
         if (d < minD) {
             minD = d;
-            minPos = i / 3 | 0;
+            minPos = Math.floor((i + 2) / 3);
         }
-
-        i++;
     }
 
     return minPos;
 }
 
-export function resembleImage (path, {fidelity}) {
+export function resembleImage(path, { fidelity }) {
     return new Promise((resolve, reject) => {
         Jimp.read(path, (err, image) => {
             if (err) {
                 reject(err);
             }
+
             let width;
             let height;
             let chunk;
+
             try {
                 width = image.bitmap.width;
                 height = image.bitmap.height;
@@ -62,22 +52,27 @@ export function resembleImage (path, {fidelity}) {
             } catch (e) {
                 return reject(e);
             }
+
             const stops = [];
-            const colourStop = colourStopFactory(width);
+
             for (let i = 0; i < width; i += chunk) {
-                let colour = image.clone()
+                const color = image.clone()
                     .crop(i, 0, chunk, height)
                     .resize(1, 1, Jimp.RESIZE_BICUBIC)
                     .getPixelColor(0, 0);
-                colour = rgbToHex(Jimp.intToRGBA(colour));
-                stops.push(colourStop(colour, i));
+
+                stops.push({
+                    color: rgbToHex(Jimp.intToRGBA(color)),
+                    position: roundNumber(i * 100 / width, 2),
+                });
             }
+
             return resolve(stops);
         });
     });
 }
 
-export function improvedResembleImage (path) {
+export function improvedResembleImage(path) {
     return new Promise((resolve, reject) => {
         Jimp.read(path, (err, image) => {
             if (err) {
@@ -98,31 +93,27 @@ export function improvedResembleImage (path) {
             });
 
             strip.scan(0, 0, strip.bitmap.width, strip.bitmap.height, function (x, y, idx) {
-                const colourIndex = findClosest(
+                const colorIndex = findClosest(
                     palette,
                     this.bitmap.data[idx],
                     this.bitmap.data[idx + 1],
-                    this.bitmap.data[idx + 2]
+                    this.bitmap.data[idx + 2],
                 );
-                this.bitmap.data[idx] = palette[colourIndex * 3];
-                this.bitmap.data[idx + 1] = palette[colourIndex * 3 + 1];
-                this.bitmap.data[idx + 2] = palette[colourIndex * 3 + 2];
+                this.bitmap.data[idx] = palette[colorIndex * 3];
+                this.bitmap.data[idx + 1] = palette[(colorIndex * 3) + 1];
+                this.bitmap.data[idx + 2] = palette[(colorIndex * 3) + 2];
             });
 
-//            strip.write('quantized.png');
-
             strip.resize(256, 1, Jimp.RESIZE_BICUBIC);
-
-//            strip.write('strip.png');
 
             const groups = [];
             let previous = '#';
 
             for (let x = 0; x < strip.bitmap.width; x++) {
-                const colour = rgbToHex(Jimp.intToRGBA(strip.getPixelColor(x, 0)));
-                if (colour !== previous) {
+                const color = rgbToHex(Jimp.intToRGBA(strip.getPixelColor(x, 0)));
+                if (color !== previous) {
                     groups.push({
-                        colour: colour,
+                        color,
                         pixels: [x],
                         weight: 1,
                         center: x / strip.bitmap.width,
@@ -133,19 +124,17 @@ export function improvedResembleImage (path) {
                     group.weight += 1;
                     group.center = 100 * (group.pixels.reduce((a, b) => a + b) / group.weight) / strip.bitmap.width;
                 }
-                previous = colour;
+                previous = color;
             }
 
             const weighted = groups.sort((a, b) => a.weight - b.weight);
 
             const sorted = weighted.slice(-4).sort((a, b) => a.center - b.center);
 
-            const stops = sorted.map((group) => {
-                return {
-                    colour: group.colour,
-                    position: Math.round(group.center * 100) / 100,
-                };
-            });
+            const stops = sorted.map(group => ({
+                color: group.color,
+                position: Math.round(group.center * 100) / 100,
+            }));
 
             return resolve(stops);
         });

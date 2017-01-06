@@ -9,39 +9,40 @@
     "report": "nyc report --reporter=html",
     "test": "cross-env BABEL_ENV=test BABEL_DISABLE_CACHE=1 nyc --check-coverage --lines 100 ava"
   },
-  "engines": {
-    "node": ">=4"
-  },
   "author": {
     "name": "Manuel Wieser",
     "email": "office@manuelwieser.com",
-    "url": "http://beneb.info"
+    "url": "https://manu.ninja/"
   },
-  "homepage": "https://github.com/Lorti/resemble-image",
+  "contributors": [
+    {
+      "name": "Ben Briggs",
+      "email": "beneb.info@gmail.com",
+      "url": "http://beneb.info"
+    }
+  ],
+  "homepage": "https://manu.ninja/thoughts-on-linear-gradients-that-resemble-images",
   "repository": "https://github.com/Lorti/resemble-image",
   "license": "MIT",
   "dependencies": {
     "jimp": "^0.2.27",
-    "postcss": "^5.2.5",
-    "postcss-value-parser": "^3.3.0"
+    "neuquant-js": "^0.2.0"
   },
   "devDependencies": {
-    "all-contributors-cli": "^3.0.6",
     "ava": "^0.15.0",
     "babel-cli": "^6.5.1",
     "babel-core": "^6.5.1",
     "babel-plugin-istanbul": "^1.0.3",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-es2016": "^6.16.0",
     "babel-register": "^6.7.2",
     "cross-env": "^1.0.7",
     "del-cli": "^0.2.0",
-    "eslint": "^3.0.0",
-    "eslint-config-cssnano": "^3.0.0",
-    "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-import": "^1.12.0",
-    "get-port": "^2.1.0",
-    "neuquant-js": "^0.2.0",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
     "nyc": "^7.1.0-candidate2"
   },
   "nyc": {
@@ -59,12 +60,34 @@
     "require": "babel-register"
   },
   "eslintConfig": {
-    "extends": "cssnano"
+    "extends": "airbnb",
+    "rules": {
+      "indent": [
+        "error",
+        4
+      ],
+      "max-len": [
+        "warn",
+        120
+      ],
+      "no-plusplus": [
+        "error",
+        {
+          "allowForLoopAfterthoughts": true
+        }
+      ],
+      "no-mixed-operators": [
+        "error",
+        {
+          "allowSamePrecedence": true
+        }
+      ]
+    }
   },
   "babel": {
     "presets": [
       "es2015",
-      "stage-0"
+      "es2016"
     ],
     "env": {
       "development": {

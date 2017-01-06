@@ -2,6 +2,7 @@
 
 > Provide a gradient fallback for an image that loosely resembles the original.
 
+## Documentation
 * [Ben Briggs' `postcss-resemble-image`][1]
 * [Improving Perceived Performance with Multiple Background Images][2]
 * [Thoughts on Linear Gradients That Resemble Images][3]
