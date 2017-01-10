@@ -2,6 +2,18 @@
 
 > Provide a gradient fallback for an image that loosely resembles the original.
 
+This package contains the algorithms described in [Thoughts on Linear Gradients That Resemble Images][3].
+
+```
+npm install resemble-image --save-dev
+```
+
+```
+import { resembleImage, improvedResembleImage } from 'resemble-image';
+resembleImage(image, { stops: 4 }).then((stops) => console.log(stops));
+improvedResembleImage(image, { stops: 4, palette: 16, intermediate: 256 }).then((stops) => console.log(stops));
+```
+
 ## Documentation
 * [Ben Briggs' `postcss-resemble-image`][1]
 * [Improving Perceived Performance with Multiple Background Images][2]
