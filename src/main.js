@@ -34,7 +34,7 @@ function findClosest(palette, r, g, b) {
     return minPos;
 }
 
-export function resembleImage(path, { fidelity }) {
+export function getEqualWidthStops(path, { fidelity }) {
     return new Promise((resolve, reject) => {
         Jimp.read(path, (err, image) => {
             if (err) {
@@ -72,7 +72,7 @@ export function resembleImage(path, { fidelity }) {
     });
 }
 
-export function improvedResembleImage(path) {
+export function getVariableWidthStops(path, { fidelity }) {
     return new Promise((resolve, reject) => {
         Jimp.read(path, (err, image) => {
             if (err) {
@@ -129,7 +129,7 @@ export function improvedResembleImage(path) {
 
             const weighted = groups.sort((a, b) => a.weight - b.weight);
 
-            const sorted = weighted.slice(-4).sort((a, b) => a.center - b.center);
+            const sorted = weighted.slice(-fidelity).sort((a, b) => a.center - b.center);
 
             const stops = sorted.map(group => ({
                 color: group.color,
