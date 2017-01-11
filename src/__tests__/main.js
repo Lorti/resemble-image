@@ -1,7 +1,7 @@
 import test from 'ava';
 import { resembleImage, improvedResembleImage } from '../main';
 
-const image = '../../docs/waves.jpg';
+const image = 'waves.jpg';
 const text = '../README.md';
 
 test('resembleImage() with a fidelity of 4 stops', (t) => {

@@ -1,6 +1,6 @@
 # resemble-image
 
-> Provide a gradient fallback for an image that loosely resembles the original.
+> Provide color stops for a gradient that loosely resembles the original image.
 
 This package contains the algorithms `resembleImage` and `improvedResembleImage` as described in [Thoughts on Linear Gradients That Resemble Images.][3]
 
@@ -17,7 +17,7 @@ var resembleImage = require('resemble-image').resembleImage;
 var improvedResembleImage = require('resemble-image').improvedResembleImage;
 ```
 
-The functions return promises, which resolve in an array of color–position pairs.
+Each function returns a promise, which resolves in an array of color–position pairs.
 ```
 resembleImage(image, { stops: 4 }).then((stops) => console.log(stops));
 // [ { color: '#023d33', position: 0 },

@@ -1,7 +1,7 @@
 {
   "name": "resemble-image",
   "version": "1.0.0",
-  "description": "Provide a gradient fallback for an image that loosely resembles the original.",
+  "description": "Provide color stops for a gradient that loosely resembles the original image.",
   "main": "dist/main.js",
   "scripts": {
     "pretest": "eslint src",
