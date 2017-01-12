@@ -1,6 +1,6 @@
 {
   "name": "resemble-image",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Provide color stops for a gradient that loosely resembles the original image.",
   "main": "dist/main.js",
   "scripts": {
