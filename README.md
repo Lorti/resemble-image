@@ -25,7 +25,7 @@ getEqualWidthStops(image, { stops: 4 }).then((stops) => console.log(stops));
 //   { color: '#91aaa5', position: 50 },
 //   { color: '#cdcfd5', position: 75 } ]
 
-getVariableWidthStops(image, { stops: 4, palette: 16, intermediate: 256 }).then((stops) => console.log(stops));
+getVariableWidthStops(image, { stops: 4 }).then((stops) => console.log(stops));
 // [ { color: '#043630', position: 9.77 },
 //   { color: '#02554b', position: 33.79 },
 //   { color: '#c4c6dd', position: 67.97 },
