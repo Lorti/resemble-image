@@ -4,21 +4,22 @@
 
 This package contains the algorithms `getEqualWidthStops` and `getVariableWidthStops` as described in [Thoughts on Linear Gradients That Resemble Images.][3]
 
-```
+``` bash
 npm install resemble-image --save-dev
 ```
 
-```
+``` js
 import { getEqualWidthStops, getVariableWidthStops } from 'resemble-image';
 ```
 
-```
+``` js
 var getEqualWidthStops = require('resemble-image').getEqualWidthStops;
 var getVariableWidthStops = require('resemble-image').getVariableWidthStops;
 ```
 
 Each function returns a promise, which resolves in an array of color–position pairs.
-```
+
+``` js
 getEqualWidthStops(image, { stops: 4 }).then((stops) => console.log(stops));
 // [ { color: '#023d33', position: 0 },
 //   { color: '#036357', position: 25 },
