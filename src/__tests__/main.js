@@ -4,6 +4,21 @@ import { getEqualWidthStops, getVariableWidthStops } from '../main';
 const image = 'waves.jpg';
 const text = '../README.md';
 
+function assertRejection(t, promise) {
+    promise.then(null, (error) => {
+        t.truthy(error.length);
+    });
+}
+
+function assertColorStops(t, promise, expected) {
+    promise.then((stops) => {
+        t.deepEqual(stops.length, expected);
+        stops.forEach((stop) => {
+            t.truthy(/^#[0-9a-f]{6}$/i.test(stop.color));
+        });
+    });
+}
+
 test('getEqualWidthStops() with a fidelity of 4 stops', (t) => {
     getEqualWidthStops(image, { fidelity: 4 }).then((stops) => {
         t.deepEqual(stops, [
@@ -26,10 +41,27 @@ test('getVariableWidthStops() with a fidelity of 4 stops', (t) => {
     });
 });
 
-test('getEqualWidthStops() should fail when opening an unreadable file', (t) => {
-    t.throws(getEqualWidthStops(text, {}));
-});
+test('getEqualWidthStops() with a fidelity of 8 stops',
+    assertColorStops,
+    getEqualWidthStops(image, { fidelity: 8 }),
+    8,
+);
 
-test('getVariableWidthStops() should fail when opening an unreadable file', (t) => {
+test('getVariableWidthStops() with a fidelity of 8 stops',
+    assertColorStops,
+    getVariableWidthStops(image, { fidelity: 8 }),
+    8,
+);
+
+test('should throw when opening an unreadable file', (t) => {
+    t.throws(getEqualWidthStops(text, {}));
     t.throws(getVariableWidthStops(text, {}));
 });
+
+test('should error when passing a weird fidelity', assertRejection, getEqualWidthStops(image, { fidelity: 0 }));
+test('should error when passing a weird fidelity', assertRejection, getVariableWidthStops(image, { fidelity: 0 }));
+
+test('should error when passing no fidelity', assertRejection, getEqualWidthStops(image, {}));
+test('should error when passing a NaN fidelity', assertRejection, getEqualWidthStops(image, { fidelity: 'Test' }));
+test('should error when passing a negative fidelity', assertRejection, getEqualWidthStops(image, { fidelity: -64 }));
+test('should error when passing an exaggerated fidelity', assertRejection, getEqualWidthStops(image, { fidelity: 64 }));

@@ -1,6 +1,20 @@
 import Jimp from 'jimp';
 import { palette as quant } from 'neuquant-js';
 
+function sanitizeFidelity(fidelity) {
+    const number = parseInt(fidelity, 10);
+    if (isNaN(number)) {
+        throw new Error('Expected a number as fidelity.');
+    }
+    if (number <= 0) {
+        throw new Error('Expected a fidelity greater than 0.');
+    }
+    if (number > 32) {
+        throw new Error('Expected a fidelity smaller than 32.');
+    }
+    return number;
+}
+
 function roundNumber(number, precision) {
     const magnitude = 10 ** precision;
     return Math.round(number * magnitude) / magnitude;
@@ -48,7 +62,7 @@ export function getEqualWidthStops(path, { fidelity }) {
             try {
                 width = image.bitmap.width;
                 height = image.bitmap.height;
-                chunk = width / fidelity;
+                chunk = width / sanitizeFidelity(fidelity);
             } catch (e) {
                 return reject(e);
             }
@@ -128,8 +142,13 @@ export function getVariableWidthStops(path, { fidelity }) {
             }
 
             const weighted = groups.sort((a, b) => a.weight - b.weight);
+            let sorted;
 
-            const sorted = weighted.slice(-fidelity).sort((a, b) => a.center - b.center);
+            try {
+                sorted = weighted.slice(-sanitizeFidelity(fidelity)).sort((a, b) => a.center - b.center);
+            } catch (e) {
+                return reject(e);
+            }
 
             const stops = sorted.map(group => ({
                 color: group.color,
