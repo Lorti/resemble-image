@@ -4,6 +4,8 @@
 
 This package contains the algorithms `getEqualWidthStops` and `getVariableWidthStops` as described in [Thoughts on Linear Gradients That Resemble Images.][3]
 
+![getEqualWidthStops(), getVariableWidthStops(), Original](https://manu.ninja/images/improved-gradient-misty.jpg)
+
 ``` bash
 npm install resemble-image --save-dev
 ```
